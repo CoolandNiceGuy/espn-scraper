@@ -1,18 +1,27 @@
 {
-  "name": "learn-cheerio",
+  "name": "espn-box-score-scraper",
   "version": "1.0.0",
-  "description": "",
+  "description": "Web Scraping package that pulls live data from ESPN box score pages",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Landon Borges",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.26.0",
     "cheerio": "^1.0.0-rc.10",
     "fs": "0.0.1-security",
     "pretty": "^2.0.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CoolandNiceGuy/espn-scraper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CoolandNiceGuy/espn-scraper/issues"
+  },
+  "homepage": "https://github.com/CoolandNiceGuy/espn-scraper#readme"
 }
