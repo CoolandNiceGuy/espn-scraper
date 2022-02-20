@@ -1,7 +1,6 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 const pretty = require("pretty");
-const fs = require("fs");
 const { table } = require("console");
 
 //const footballUrl = "https://www.espn.com/nfl/boxscore/_/gameId/401326638";
@@ -151,3 +150,5 @@ let removeExtraRows = (arr) => {
 
     return formattedArr;
 }
+
+export default scrape;
