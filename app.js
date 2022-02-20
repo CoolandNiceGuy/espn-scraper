@@ -149,3 +149,5 @@ let removeExtraRows = (arr) => {
 
     return formattedArr;
 }
+
+module.exports = { scrape };
