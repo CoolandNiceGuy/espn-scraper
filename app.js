@@ -18,7 +18,7 @@ async function scrape(url) {
         output = pretty(output);
 
         let stats = parseRows($);
-
+        console.log(stats);
         return stats
     }
     catch(err){
@@ -151,4 +151,4 @@ let removeExtraRows = (arr) => {
     return formattedArr;
 }
 
-export default scrape;
+// export default scrape;

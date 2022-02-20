@@ -1,6 +1,6 @@
 {
   "name": "espn-box-score-scraper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Web Scraping package that pulls live data from ESPN box score pages",
   "main": "index.js",
   "scripts": {
