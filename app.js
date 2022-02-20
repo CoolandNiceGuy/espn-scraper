@@ -17,7 +17,7 @@ async function scrape(url) {
         output = pretty(output);
 
         let stats = parseRows($);
-        console.log(stats);
+
         return stats
     }
     catch(err){
@@ -70,7 +70,7 @@ let parseRows = (cheerio_obj) => {
 
     arr = removeExtraRows(arr);
     
-    let players = [];
+    let players = {};
     let names = [];
 
     for(let i = 0; i < arr.length; i++){
