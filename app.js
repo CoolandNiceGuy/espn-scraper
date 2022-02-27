@@ -2,7 +2,7 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const pretty = require("pretty");
 
-//const footballUrl = "https://www.espn.com/nfl/boxscore/_/gameId/401326638";
+// const footballUrl = "https://www.espn.com/nfl/boxscore/_/gameId/401326638";
 
 //async function to scrape data
 async function scrape(url) {
@@ -17,7 +17,6 @@ async function scrape(url) {
         output = pretty(output);
 
         let stats = parseRows($);
-
         return stats
     }
     catch(err){
@@ -141,6 +140,16 @@ let removeExtraRows = (arr) => {
             //"carries" are only used for rushing stat
             if(temp.includes("class=\"car\"")){
                 temp = temp.replace("yds", "rush_yards");
+                temp = temp.replace("td", "rush_td");
+                temp = temp.replace("avg", "rush_avg");
+                temp = temp.replace("long", "rush_long");
+            }
+            //"targets" only used for receiving stat
+            if(temp.includes("class=\"tgts\"")){
+                temp = temp.replace("yds", "rec_yards");
+                temp = temp.replace("long", "rec_long");
+                temp = temp.replace("td", "rec_td");
+                temp = temp.replace("avg", "rec_avg");
             }
 
             formattedArr.push(pretty(temp.replace('<tr>', '')));
