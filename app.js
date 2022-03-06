@@ -2,21 +2,19 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const pretty = require("pretty");
 
-// const footballUrl = "https://www.espn.com/nfl/boxscore/_/gameId/401326638";
+const footballUrl = "https://www.espn.com/nfl/boxscore/_/gameId/401326638";
 
 //async function to scrape data
-async function scrape(url) {
+//optional fields parameter to request specifics stats
+async function scrape(url, fields=[]) {
     try {
         //fetch HTML from url
         const { data } = await axios.get(url);
         //load fetched data
         const $ = cheerio.load(data);
 
-        let output = $("tr").toString();
+        let stats = parseRows($, fields);
 
-        output = pretty(output);
-
-        let stats = parseRows($);
         return stats
     }
     catch(err){
@@ -62,9 +60,9 @@ let getName = (str) => {
 }
 
 //go through all rows of box score tables and create objects
-let parseRows = (cheerio_obj) => {
+let parseRows = (cheerio_obj, fields = []) => {
     let output = (cheerio_obj("tr").toString());
-
+    
     //remove edge-cases
     let arr = output.split('</tr>');
 
@@ -74,8 +72,7 @@ let parseRows = (cheerio_obj) => {
     let names = [];
 
     for(let i = 0; i < arr.length; i++){
-        let temp = makePlayerObject(arr[i]);
-
+        let temp = makePlayerObject(arr[i], fields);
         //if player not seen before 
         if(names[temp.name] === undefined){
             //players.push(temp);
@@ -88,23 +85,24 @@ let parseRows = (cheerio_obj) => {
             let newEntries = Object.entries(temp);
             
             let oldEntries = names[temp.name];
-
-            oldEntries.push(...newEntries)
-
+            if(newEntries.includes('yds') || newEntries.includes('td') || newEntries.includes('rec_yards') || newEntries.includes('rush_yards')){
+                
+            }
+            oldEntries.push(...newEntries);  
             players[temp.name] = Object.fromEntries(oldEntries);
         }
     }
     return players;
 }
 
-let makePlayerObject = (tableRow) => {
+let makePlayerObject = (tableRow, fields = []) => {
     //parse rest of object and get fields
-    let obj = getFields(tableRow);
+    let obj = getFields(tableRow, fields);
 
     return obj;
 }
 
-let getFields = (tableRow) => {
+let getFields = (tableRow, fields = []) => {
     let arr = tableRow.split('</td>');
     let obj = {}
 
@@ -122,6 +120,11 @@ let getFields = (tableRow) => {
 
         if(str.length > 0) {
             obj[str] = value;
+        }
+
+        //if custom fields inputted, delete non-requested fields
+        if((fields.length > 0) && !fields.includes(str)){
+            delete obj[str];
         }
     }
 
@@ -153,15 +156,12 @@ let removeExtraRows = (arr) => {
                 temp = temp.replace("avg", "rec_avg");
             }
 
-
-            //only add relevant tracking fields
-            if(temp.includes("class=\"rec\"", "class=\"yds\"", "class=\"tds\"", "class=\"rec_yards\"", "class=\"rush_yards\"")){
-                formattedArr.push(pretty(temp.replace('<tr>', '')));
-            }
+            formattedArr.push(pretty(temp.replace('<tr>', '')));
         }
     }
 
     return formattedArr;
 }
+
 
 module.exports = { scrape };
