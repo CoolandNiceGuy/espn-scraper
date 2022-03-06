@@ -21,6 +21,7 @@ async function scrape(url) {
     }
     catch(err){
         console.log(err)
+        return -1;
     }
 }
 
@@ -152,7 +153,11 @@ let removeExtraRows = (arr) => {
                 temp = temp.replace("avg", "rec_avg");
             }
 
-            formattedArr.push(pretty(temp.replace('<tr>', '')));
+
+            //only add relevant tracking fields
+            if(temp.includes("class=\"rec\"", "class=\"yds\"", "class=\"tds\"", "class=\"rec_yards\"", "class=\"rush_yards\"")){
+                formattedArr.push(pretty(temp.replace('<tr>', '')));
+            }
         }
     }
 
