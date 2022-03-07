@@ -23,6 +23,83 @@ async function scrape(url, fields=[]) {
     }
 }
 
+async function getGameInfo(url) {
+    //fetch HTML from url
+    const { data } = await axios.get(url);
+    //load fetched data
+    const $ = cheerio.load(data);
+    let output = $(".team-container").toString();
+    output = pretty(output);
+
+    let teamOne = {};
+    let teamTwo = {};
+
+    let [linkOne, linkTwo] = getImageLink(output);
+
+    teamOne.imageLink = linkOne;
+    teamTwo.imageLink = linkTwo;
+
+    let [nameOne, nameTwo] = getTeamName(output);
+
+    teamOne.name = nameOne;
+    teamTwo.name = nameTwo;
+
+    let [scoreOne, scoreTwo] = await getScores(url);
+
+    teamOne.score = scoreOne;
+    teamTwo.score = scoreTwo;
+
+    return [teamOne, teamTwo];
+}
+
+let getImageLink = (cheerio_output) => {
+    //regular expression extracts image source
+    const re = /src="([^">]+)"/g;
+    let [src1, src2] = cheerio_output.match(re);
+
+    //TODO: get rid of extra characters other than url
+
+    src1 = src1.replace('src=', '');
+    src1 = src1.replace('\"', '');
+
+    src2 = src2.replace('src=', '');
+    src2 = src2.replace('\"', '');
+
+    return [src1, src2];
+}
+
+async function getScores(url) {
+    //fetch HTML from url
+    const { data } = await axios.get(url);
+    //load fetched data
+    const $ = cheerio.load(data);
+    let output = $(".score-container").toString();
+    output = pretty(output);
+
+    let re = /\d+/g
+    let arr = output.match(re);
+
+    return arr;
+}
+
+let getTeamName = (cheerio_output) => {
+    //regular expression to extract team names
+    const re = /<span class="short-name">(.*?)<\/span>/g
+    
+    let [str1, str2] = cheerio_output.match(re);
+
+    str1 = str1.replace('<span class=\"short-name\">', '');
+    str1 = str1.replace('</span>', '');
+
+    str2 = str2.replace('<span class=\"short-name\">', '');
+    str2 = str2.replace('</span>', '');
+    
+    let output = [str1, str2];
+    
+    return output;
+}
+
+
 //this function is tested and works
 let getPlayerNames = (cheerio_obj) => {
     let output = cheerio_obj(".name").toString();
@@ -163,5 +240,4 @@ let removeExtraRows = (arr) => {
     return formattedArr;
 }
 
-
-module.exports = { scrape };
+module.exports = { scrape, getGameInfo };
