@@ -1,3 +1,4 @@
+const gameSchedule = require("./Utils/GameSchedule");
 const axios = require("axios");
 const cheerio = require("cheerio");
 const pretty = require("pretty");
@@ -239,5 +240,46 @@ let removeExtraRows = (arr) => {
 
     return formattedArr;
 }
+
+//function that parses for all links to the box scores for given week in NFL
+const getBoxScoreLinks = async (url) => {
+    //fetch HTML from url
+    const { data } = await axios.get(url);
+    //load fetched data
+    const $ = cheerio.load(data);
+    //returns 3 kinds of buttons: gamecast, boxscore, play-by-play
+    
+    const targetClass = "Scoreboard__Callouts"
+    let output = $("." + targetClass).toString();
+    output = pretty(output);
+    const re = /(?:href=)(\"\/nfl\/boxscore.*\">Box Score)/g
+    let arr = output.match(re)
+    
+    for(let i = 0; i < arr.length; i++){
+        arr[i] = arr[i].replace("href=\"", '');
+        arr[i] = arr[i].replace("\">Box Score", '')
+        arr[i] = "espn.com" + arr[i]
+    }
+
+    return arr;
+}
+
+const getBoxScoreLinksByDate = async (month = -1, day = -1) => {
+    const date = new Date();
+    if(month === -1){
+        month = date.getMonth()
+    }
+    if(day === -1){
+        day = date.getDate();
+    }
+
+    const nflWeek = gameSchedule.getNFLWeek(month, day);
+    console.log(nflWeek)
+    const links = await getBoxScoreLinks(nflWeek);
+    console.log(links)
+    return links;
+}
+
+getBoxScoreLinksByDate(11,4);
 
 module.exports = { scrape, getGameInfo };
