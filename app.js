@@ -280,4 +280,4 @@ const getBoxScoreLinksByDate = async (month = -1, day = -1) => {
     return links;
 }
 
-module.exports = { scrape, getGameInfo };
+module.exports = { scrape, getGameInfo, getBoxScoreLinksByDate};
