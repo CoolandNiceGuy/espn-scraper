@@ -10,7 +10,11 @@ const footballUrl = "https://www.espn.com/nfl/boxscore/_/gameId/401326638";
 async function scrape(url, fields=[]) {
     try {
         //fetch HTML from url
-        const { data } = await axios.get(url);
+        const { data } = await axios.get(url, {
+            headers: {
+                "Access-Control-Allow-Origin": "true"
+            }
+        });
         //load fetched data
         const $ = cheerio.load(data);
 
@@ -274,10 +278,12 @@ const getBoxScoreLinksByDate = async (month = -1, day = -1) => {
     }
 
     const nflWeek = gameSchedule.getNFLWeek(month, day);
-    console.log(nflWeek)
+    // console.log(nflWeek)
     const links = await getBoxScoreLinks(nflWeek);
-    console.log(links)
+    // console.log(links)
     return links;
 }
+
+getBoxScoreLinksByDate(11,4)
 
 module.exports = { scrape, getGameInfo, getBoxScoreLinksByDate};
