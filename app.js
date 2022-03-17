@@ -4,15 +4,16 @@ const cheerio = require("cheerio");
 const pretty = require("pretty");
 
 const footballUrl = "https://www.espn.com/nfl/boxscore/_/gameId/401326638";
+let reqInstance = axios.create({
+    headers: {"Access-Control-Allow-Origin": "*"} 
+})
 
 //async function to scrape data
 //optional fields parameter to request specifics stats
 async function scrape(url, fields=[]) {
     try {
         //fetch HTML from url
-        const { data } = await axios.get(url, {
-            headers: {"Access-Control-Allow-Origin": "*"} 
-        });
+        const { data } = await reqInstance.get(url);
         //load fetched data
         const $ = cheerio.load(data);
 
@@ -28,9 +29,7 @@ async function scrape(url, fields=[]) {
 
 async function getGameInfo(url) {
     //fetch HTML from url
-    const { data } = await axios.get(url, {
-        headers: {"Access-Control-Allow-Origin": "*"} 
-    });
+    const { data } = await reqInstance.get(url);
     //load fetched data
     const $ = cheerio.load(data);
     let output = $(".team-container").toString();
@@ -75,9 +74,7 @@ let getImageLink = (cheerio_output) => {
 
 async function getScores(url) {
     //fetch HTML from url
-    const { data } = await axios.get(url, {
-        headers: {"Access-Control-Allow-Origin": "*"} 
-    });
+    const { data } = await reqInstance.get(url);
     //load fetched data
     const $ = cheerio.load(data);
     let output = $(".score-container").toString();
@@ -252,9 +249,7 @@ const getBoxScoreLinks = async (url) => {
     //fetch HTML from url: FIRST
     // const { data } = await axios.get(url);
 
-    const { data } = await axios.get(url, {
-        headers: {"Access-Control-Allow-Origin": "*"} 
-    });
+    const { data } = await reqInstance.get(url);
 
     //load fetched data
     const $ = cheerio.load(data);
@@ -283,14 +278,14 @@ const getBoxScoreLinksByDate = async (month = -1, day = -1) => {
     if(day === -1){
         day = date.getDate();
     }
-
+    
     const nflWeek = gameSchedule.getNFLWeek(month, day);
-    // console.log(nflWeek)
+    //console.log(nflWeek)
     const links = await getBoxScoreLinks(nflWeek);
-    // console.log(links)
+    //console.log(links)
     return links;
 }
 
-// getBoxScoreLinksByDate(11,4)
+//getBoxScoreLinksByDate(11,4)
 
 module.exports = { scrape, getGameInfo, getBoxScoreLinksByDate};
