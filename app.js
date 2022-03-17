@@ -5,7 +5,8 @@ const pretty = require("pretty");
 
 const footballUrl = "https://www.espn.com/nfl/boxscore/_/gameId/401326638";
 let reqInstance = axios.create({
-    headers: {"Access-Control-Allow-Origin": "*"} 
+    headers: {"Access-Control-Allow-Origin": "*"} ,
+    "Referer": "https://www.scrapingbee.com/",
 })
 
 //async function to scrape data
