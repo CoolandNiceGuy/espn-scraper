@@ -11,9 +11,7 @@ async function scrape(url, fields=[]) {
     try {
         //fetch HTML from url
         const { data } = await axios.get(url, {
-            headers: {
-                "Access-Control-Allow-Origin": "true"
-            }
+            headers: {"Access-Control-Allow-Origin": "*"} 
         });
         //load fetched data
         const $ = cheerio.load(data);
@@ -30,7 +28,9 @@ async function scrape(url, fields=[]) {
 
 async function getGameInfo(url) {
     //fetch HTML from url
-    const { data } = await axios.get(url);
+    const { data } = await axios.get(url, {
+        headers: {"Access-Control-Allow-Origin": "*"} 
+    });
     //load fetched data
     const $ = cheerio.load(data);
     let output = $(".team-container").toString();
@@ -75,7 +75,9 @@ let getImageLink = (cheerio_output) => {
 
 async function getScores(url) {
     //fetch HTML from url
-    const { data } = await axios.get(url);
+    const { data } = await axios.get(url, {
+        headers: {"Access-Control-Allow-Origin": "*"} 
+    });
     //load fetched data
     const $ = cheerio.load(data);
     let output = $(".score-container").toString();
@@ -247,8 +249,13 @@ let removeExtraRows = (arr) => {
 
 //function that parses for all links to the box scores for given week in NFL
 const getBoxScoreLinks = async (url) => {
-    //fetch HTML from url
-    const { data } = await axios.get(url);
+    //fetch HTML from url: FIRST
+    // const { data } = await axios.get(url);
+
+    const { data } = await axios.get(url, {
+        headers: {"Access-Control-Allow-Origin": "*"} 
+    });
+
     //load fetched data
     const $ = cheerio.load(data);
     //returns 3 kinds of buttons: gamecast, boxscore, play-by-play
