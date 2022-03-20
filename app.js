@@ -4,21 +4,22 @@ const cheerio = require("cheerio");
 const pretty = require("pretty");
 
 const footballUrl = "https://www.espn.com/nfl/boxscore/_/gameId/401326638";
-let reqInstance = axios.create({
-    headers: {"Access-Control-Allow-Origin": "*"} 
-})
 
 //async function to scrape data
 //optional fields parameter to request specifics stats
-async function scrape(url, fields=[]) {
+//optional API_KEY parameter used with ScraperApi 
+async function scrape(url, fields=[], API_KEY) {
     try {
         //fetch HTML from url
-        const { data } = await reqInstance.get(url);
+        const { data } = (API_KEY === undefined)? 
+        await axios.get(url):
+        await axios('http://api.scraperapi.com/', {params: {'url': url,'api_key': API_KEY}});
+
         //load fetched data
         const $ = cheerio.load(data);
 
         let stats = parseRows($, fields);
-
+        
         return stats
     }
     catch(err){
@@ -27,9 +28,12 @@ async function scrape(url, fields=[]) {
     }
 }
 
-async function getGameInfo(url) {
+async function getGameInfo(url, API_KEY) {
     //fetch HTML from url
-    const { data } = await reqInstance.get(url);
+    const { data } = (API_KEY === undefined)? 
+    await axios.get(url):
+    await axios('http://api.scraperapi.com/', {params: {'url': url,'api_key': API_KEY}});
+
     //load fetched data
     const $ = cheerio.load(data);
     let output = $(".team-container").toString();
@@ -72,9 +76,12 @@ let getImageLink = (cheerio_output) => {
     return [src1, src2];
 }
 
-async function getScores(url) {
+async function getScores(url, API_KEY) {
     //fetch HTML from url
-    const { data } = await reqInstance.get(url);
+    const { data } = (API_KEY === undefined)? 
+    await axios.get(url):
+    await axios('http://api.scraperapi.com/', {params: {'url': url,'api_key': API_KEY}});
+
     //load fetched data
     const $ = cheerio.load(data);
     let output = $(".score-container").toString();
@@ -245,11 +252,11 @@ let removeExtraRows = (arr) => {
 }
 
 //function that parses for all links to the box scores for given week in NFL
-const getBoxScoreLinks = async (url) => {
-    //fetch HTML from url: FIRST
-    // const { data } = await axios.get(url);
-
-    const { data } = await reqInstance.get(url);
+const getBoxScoreLinks = async (url, API_KEY) => {
+    //fetch HTML from url
+    const { data } = (API_KEY === undefined)? 
+    await axios.get(url):
+    await axios('http://api.scraperapi.com/', {params: {'url': url,'api_key': API_KEY}});
 
     //load fetched data
     const $ = cheerio.load(data);
@@ -270,7 +277,7 @@ const getBoxScoreLinks = async (url) => {
     return arr;
 }
 
-const getBoxScoreLinksByDate = async (month = -1, day = -1) => {
+const getBoxScoreLinksByDate = async (month = -1, day = -1, API_KEY) => {
     const date = new Date();
     if(month === -1){
         month = date.getMonth()
@@ -280,12 +287,15 @@ const getBoxScoreLinksByDate = async (month = -1, day = -1) => {
     }
     
     const nflWeek = gameSchedule.getNFLWeek(month, day);
-    //console.log(nflWeek)
-    const links = await getBoxScoreLinks(nflWeek);
-    //console.log(links)
+    
+    const links = (API_KEY === undefined)? await getBoxScoreLinks(nflWeek): await getBoxScoreLinks(nflWeek, API_KEY);
+    console.log(links);
     return links;
 }
 
-//getBoxScoreLinksByDate(11,4)
+//getBoxScoreLinksByDate(11,4, API_KEY = SCRAPER_API_KEY);
+
+
+// scrape('https://www.espn.com/nfl/boxscore/_/gameId/401326436', fields=[], API_KEY = SCRAPER_API_KEY);
 
 module.exports = { scrape, getGameInfo, getBoxScoreLinksByDate};
